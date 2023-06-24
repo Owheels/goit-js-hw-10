@@ -4,6 +4,7 @@ import 'notiflix/dist/notiflix-3.2.6.min.css';
 import { fetchBreeds } from './cat-api';
 import { fetchCatByBreed } from './cat-api';
 
+
 const breedSelect = document.querySelector('.breed-select');
 
 fetchBreeds()
