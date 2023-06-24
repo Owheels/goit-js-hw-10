@@ -1,21 +1,12 @@
 import Notiflix from 'notiflix';
 import 'notiflix/dist/notiflix-3.2.6.min.css';
-import SlimSelect from 'slim-select';
-import 'slim-select/dist/slimselect.css';
 
 import { fetchBreeds } from './cat-api';
 import { fetchCatByBreed } from './cat-api';
 
-new SlimSelect({
-  select: '.breed-select',
-});
-
 const breedSelect = document.querySelector('.breed-select');
 const loaderElement = document.querySelector('.loader');
 const errorElement = document.querySelector('.error');
-const catInfoElement = document.querySelector('.cat-info');
-
-
 
 function showElement(element) {
   element.style.display = 'block';
@@ -34,10 +25,7 @@ fetchBreeds()
     hideElement(loaderElement);
     showElement(breedSelect);
   })
-  .catch(err => {
-    showElement(errorElement);
-    hideElement(loaderElement);
-  });
+  .catch(err => showElement(errorElement));
 
 function createList(data) {
   data.forEach(breed => {
@@ -52,7 +40,6 @@ breedSelect.addEventListener('change', onChange);
 
 function onChange(event) {
   const breedId = event.target.value;
-  hideElement(catInfoElement);
   showElement(loaderElement);
   fetchBreeds()
     .then(breeds => {
@@ -65,6 +52,8 @@ function onChange(event) {
         fetchCatByBreed(breedId)
           .then(response => {
             const catImage = response[0].url;
+
+            const catInfoElement = document.querySelector('.cat-info');
 
             const html = `
                 <div style="display: flex; align-items: center; max-width: 100%;">
@@ -79,16 +68,9 @@ function onChange(event) {
 
             catInfoElement.innerHTML = html;
             hideElement(loaderElement);
-            showElement(catInfoElement);
           })
-          .catch(err => {
-            showElement(errorElement);
-            hideElement(loaderElement);
-          });
+          .catch(err => showElement(errorElement));
       }
     })
-    .catch(err => {
-      showElement(errorElement);
-      hideElement(loaderElement);
-    });
+    .catch(err => showElement(errorElement));
 }
