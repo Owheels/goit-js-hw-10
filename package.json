@@ -20,7 +20,8 @@
   "dependencies": {
     "modern-normalize": "^1.1.0",
     "notiflix": "^3.2.6",
-    "slim-select": "^2.5.1"
+    "slim-select": "^2.5.1",
+    "tom-select": "^2.2.2"
   },
   "devDependencies": {
     "@parcel/transformer-sass": "^2.6.0",

@@ -1,21 +1,20 @@
 import Notiflix from 'notiflix';
 import 'notiflix/dist/notiflix-3.2.6.min.css';
-import SlimSelect from 'slim-select';
-import 'slim-select/dist/slimselect.css';
+import TomSelect from 'tom-select';
+import 'tom-select/dist/css/tom-select.bootstrap4.min.css';
 
 import { fetchBreeds } from './cat-api';
 import { fetchCatByBreed } from './cat-api';
-
-new SlimSelect({
-  select: '.breed-select',
-});
 
 const breedSelect = document.querySelector('.breed-select');
 const loaderElement = document.querySelector('.loader');
 const errorElement = document.querySelector('.error');
 const catInfoElement = document.querySelector('.cat-info');
 
+const tomSelect = new TomSelect(breedSelect, {});
 
+hideElement(tomSelect.wrapper);
+hideElement(errorElement);
 
 function showElement(element) {
   element.style.display = 'block';
@@ -25,33 +24,39 @@ function hideElement(element) {
   element.style.display = 'none';
 }
 
-hideElement(breedSelect);
-hideElement(errorElement);
-
 fetchBreeds()
   .then(data => {
     createList(data);
     hideElement(loaderElement);
-    showElement(breedSelect);
+    showElement(tomSelect.wrapper);
   })
   .catch(err => {
     showElement(errorElement);
     hideElement(loaderElement);
+    Notiflix.Notify.failure(
+      'Oops! Something went wrong! Try reloading the page!',
+      {
+        width: '500px',
+        timeout: '5000',
+        fontSize: '25px',
+        opacity: 0.7,
+      }
+    );
   });
 
 function createList(data) {
   data.forEach(breed => {
-    const option = document.createElement('option');
-    option.value = breed.id;
-    option.textContent = breed.name;
-    breedSelect.appendChild(option);
+    tomSelect.addOption({
+      value: breed.id,
+      text: breed.name,
+    });
   });
 }
 
-breedSelect.addEventListener('change', onChange);
+tomSelect.on('change', onChange);
 
 function onChange(event) {
-  const breedId = event.target.value;
+  const breedId = tomSelect.getValue();
   hideElement(catInfoElement);
   showElement(loaderElement);
   fetchBreeds()
@@ -67,7 +72,7 @@ function onChange(event) {
             const catImage = response[0].url;
 
             const html = `
-                <div style="display: flex; align-items: center; max-width: 100%;">
+                <div style="display: flex; align-items: center; margin-top: 20px; max-width: 100%;">
                   <img src="${catImage}" alt="Cat Image" style="max-width: 500px;">
                   <div style="margin-left: 10px;">
                     <h1>${breedName}</h1>
@@ -84,11 +89,29 @@ function onChange(event) {
           .catch(err => {
             showElement(errorElement);
             hideElement(loaderElement);
+            Notiflix.Notify.failure(
+              'Oops! Something went wrong! Try reloading the page!',
+              {
+                width: '500px',
+                timeout: '5000',
+                fontSize: '25px',
+                opacity: 0.7,
+              }
+            );
           });
       }
     })
     .catch(err => {
       showElement(errorElement);
       hideElement(loaderElement);
+      Notiflix.Notify.failure(
+        'Oops! Something went wrong! Try reloading the page!',
+        {
+          width: '500px',
+          timeout: '5000',
+          fontSize: '25px',
+          opacity: 0.7,
+        }
+      );
     });
 }
